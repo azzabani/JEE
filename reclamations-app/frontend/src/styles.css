@@ -1,0 +1,93 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f9;
+}
+
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a237e 0%, #283593 100%);
+  color: white;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+  padding-top: 20px;
+}
+
+.sidebar .nav-link {
+  color: rgba(255,255,255,0.8);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  border-radius: 0 25px 25px 0;
+  margin-right: 15px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.navbar-top {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  padding: 12px 24px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 16px 20px;
+  font-weight: 600;
+}
+
+.badge-OUVERTE { background-color: #17a2b8; }
+.badge-EN_COURS { background-color: #ffc107; color: #000; }
+.badge-RESOLUE { background-color: #28a745; }
+.badge-FERMEE { background-color: #6c757d; }
+.badge-REJETEE { background-color: #dc3545; }
+
+.stat-card {
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a237e 0%, #42a5f5 100%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  padding: 40px;
+  background: white;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
