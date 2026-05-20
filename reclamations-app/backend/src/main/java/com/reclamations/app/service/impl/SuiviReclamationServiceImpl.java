@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,17 +30,18 @@ public class SuiviReclamationServiceImpl implements SuiviReclamationService {
 
     @Override
     public SuiviReclamationDTO create(SuiviReclamationDTO dto) {
-        Reclamation reclamation = reclamationRepository.findById(dto.getReclamationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + dto.getReclamationId()));
+        Long reclamationId = Objects.requireNonNull(dto.getReclamationId(), "L'id de la réclamation ne peut pas être null"); 
+        Reclamation reclamation = reclamationRepository.findById(reclamationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + reclamationId));
 
         SuiviReclamation suivi = suiviMapper.toEntity(dto);
         suivi.setReclamation(reclamation);
-        return suiviMapper.toDTO(suiviRepository.save(suivi));
+        return suiviMapper.toDTO(suiviRepository.save(Objects.requireNonNull(suivi)));
     }
 
     @Override
     public void delete(Long id) {
-        if (!suiviRepository.existsById(id)) {
+        if (!suiviRepository.existsById(Objects.requireNonNull(id, "L'id du suivi ne peut pas être null"))) {
             throw new ResourceNotFoundException("Suivi non trouvé avec l'id: " + id);
         }
         suiviRepository.deleteById(id);

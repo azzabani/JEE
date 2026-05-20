@@ -9,10 +9,13 @@ import com.reclamations.app.repository.ClientRepository;
 import com.reclamations.app.repository.UtilisateurRepository;
 import com.reclamations.app.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +31,14 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDTO findById(Long id) {
+    public ClientDTO findById(@NonNull Long id) {
         return clientRepository.findById(id)
                 .map(clientMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'id: " + id));
     }
 
     @Override
-    public ClientDTO findByEmail(String email) {
+    public ClientDTO findByEmail( String email) {
         return clientRepository.findByEmail(email)
                 .map(clientMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'email: " + email));
@@ -47,11 +50,11 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Un client avec cet email existe déjà");
         }
         Client client = clientMapper.toEntity(dto);
-        return clientMapper.toDTO(clientRepository.save(client));
+        return clientMapper.toDTO(clientRepository.save(Objects.requireNonNull(client)));
     }
 
     @Override
-    public ClientDTO update(Long id, ClientDTO dto) {
+    public ClientDTO update( @NonNull Long id, ClientDTO dto) {
         Client existing = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'id: " + id));
         
@@ -67,7 +70,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         if (!clientRepository.existsById(id)) {
             throw new ResourceNotFoundException("Client non trouvé avec l'id: " + id);
         }
@@ -79,7 +82,7 @@ public class ClientServiceImpl implements ClientService {
         // Supprimer l'utilisateur associé par email
         Optional<Utilisateur> utilisateur = utilisateurRepository.findByEmail(client.getEmail());
         if (utilisateur.isPresent()) {
-            utilisateurRepository.delete(utilisateur.get());
+            utilisateurRepository.delete(Objects.requireNonNull(utilisateur.get()));
         }
         
         // Supprimer le client

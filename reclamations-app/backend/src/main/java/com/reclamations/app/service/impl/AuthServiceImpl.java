@@ -16,6 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -45,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
                 .role(role)
                 .build();
 
-        utilisateurRepository.save(user);
+        utilisateurRepository.save(Objects.requireNonNull(user));
         
         // Si c'est un CLIENT, créer automatiquement son profil client
         if (role == Role.ROLE_CLIENT) {
@@ -57,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
                             .email(user.getEmail())
                             .telephone(request.getTelephone()) // Utiliser le téléphone fourni
                             .build();
-                    clientRepository.save(client);
+                    clientRepository.save(Objects.requireNonNull(client));
                 }
             } catch (Exception e) {
                 // Si erreur, on continue quand même

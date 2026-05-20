@@ -12,12 +12,14 @@ import com.reclamations.app.repository.AgentSAVRepository;
 import com.reclamations.app.repository.ClientRepository;
 import com.reclamations.app.repository.ReclamationRepository;
 import com.reclamations.app.service.ReclamationService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class ReclamationServiceImpl implements ReclamationService {
     }
 
     @Override
-    public ReclamationDTO findById(Long id) {
+    public ReclamationDTO findById(@NonNull Long id) {
         return reclamationRepository.findById(id)
                 .map(reclamationMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + id));
@@ -42,16 +44,18 @@ public class ReclamationServiceImpl implements ReclamationService {
 
     @Override
     public ReclamationDTO create(ReclamationDTO dto) {
-        Client client = clientRepository.findById(dto.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'id: " + dto.getClientId()));
+        Long clientId = Objects.requireNonNull(dto.getClientId(), "L'id du client ne peut pas être null");
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'id: " + clientId));
 
         Reclamation reclamation = reclamationMapper.toEntity(dto);
         reclamation.setClient(client);
         reclamation.setStatut(StatutReclamation.OUVERTE);
 
-        if (dto.getAgentId() != null) {
-            AgentSAV agent = agentSAVRepository.findById(dto.getAgentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Agent non trouvé avec l'id: " + dto.getAgentId()));
+        Long agentId = dto.getAgentId();
+        if (agentId != null) {
+            AgentSAV agent = agentSAVRepository.findById(agentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Agent non trouvé avec l'id: " + agentId));
             reclamation.setAgentSAV(agent);
         }
 
@@ -59,7 +63,7 @@ public class ReclamationServiceImpl implements ReclamationService {
     }
 
     @Override
-    public ReclamationDTO update(Long id, ReclamationDTO dto) {
+    public ReclamationDTO update(@NonNull Long id, ReclamationDTO dto) {
         Reclamation existing = reclamationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + id));
 
@@ -72,7 +76,7 @@ public class ReclamationServiceImpl implements ReclamationService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         if (!reclamationRepository.existsById(id)) {
             throw new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + id);
         }
@@ -80,12 +84,12 @@ public class ReclamationServiceImpl implements ReclamationService {
     }
 
     @Override
-    public List<ReclamationDTO> findByClient(Long clientId) {
+    public List<ReclamationDTO> findByClient(@NonNull Long clientId) {
         return reclamationRepository.findByClientId(clientId).stream().map(reclamationMapper::toDTO).toList();
     }
 
     @Override
-    public List<ReclamationDTO> findByAgent(Long agentId) {
+    public List<ReclamationDTO> findByAgent(@NonNull Long agentId) {
         return reclamationRepository.findByAgentSAVId(agentId).stream().map(reclamationMapper::toDTO).toList();
     }
 
@@ -95,7 +99,7 @@ public class ReclamationServiceImpl implements ReclamationService {
     }
 
     @Override
-    public ReclamationDTO affecter(Long reclamationId, Long agentId) {
+    public ReclamationDTO affecter(@NonNull Long reclamationId, @NonNull Long agentId) {
         Reclamation reclamation = reclamationRepository.findById(reclamationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + reclamationId));
         AgentSAV agent = agentSAVRepository.findById(agentId)
@@ -108,7 +112,7 @@ public class ReclamationServiceImpl implements ReclamationService {
 
     @Override
     public ReclamationDTO changerStatut(Long id, StatutReclamation statut) {
-        Reclamation reclamation = reclamationRepository.findById(id)
+        Reclamation reclamation = reclamationRepository.findById( Objects.requireNonNull(id, "L'id de la réclamation ne peut pas être null"))
                 .orElseThrow(() -> new ResourceNotFoundException("Réclamation non trouvée avec l'id: " + id));
         reclamation.setStatut(statut);
         return reclamationMapper.toDTO(reclamationRepository.save(reclamation));
